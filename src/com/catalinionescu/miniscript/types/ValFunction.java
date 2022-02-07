@@ -18,8 +18,8 @@ public class ValFunction extends Value {
 	}
 
 	@Override
-	public String ToString(Machine vm) {
-		return function.ToString(vm);
+	public String toString(Machine vm) {
+		return function.toString(vm);
 	}
 
 	@Override

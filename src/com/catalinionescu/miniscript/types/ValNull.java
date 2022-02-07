@@ -11,7 +11,7 @@ public class ValNull extends Value {
 	private ValNull() {}
 	
 	@Override
-	public String ToString(Machine machine) {
+	public String toString(Machine machine) {
 		return "null";
 	}
 	

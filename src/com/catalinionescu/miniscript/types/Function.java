@@ -23,8 +23,13 @@ public class Function {
 		this.code = code;
 		parameters = new ArrayList<Param>();
 	}
+	
+	@Override
+	public String toString() {
+		return toString(null);
+	}
 
-	public String ToString(Machine vm) {
+	public String toString(Machine vm) {
 		StringBuilder s = new StringBuilder();
 		s.append("FUNCTION(");			
 		for (int i=0; i < parameters.size(); i++) {

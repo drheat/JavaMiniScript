@@ -25,9 +25,8 @@ public class ValVar extends Value {
 	}
 
 	@Override
-	public String ToString(Machine vm) {
-		if (noInvoke) return "@" + identifier;
-		return identifier;
+	public String toString(Machine vm) {
+		return noInvoke ? "@" : "" + identifier;
 	}
 
 	@Override

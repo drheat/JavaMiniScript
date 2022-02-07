@@ -20,7 +20,7 @@ public class ValString extends Value {
 	}
 
 	@Override
-	public String ToString(Machine vm) {
+	public String toString(Machine vm) {
 		return value;
 	}
 

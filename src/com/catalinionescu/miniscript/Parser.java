@@ -132,7 +132,7 @@ public class Parser {
 			for (int idx = backpatches.size() - 1; idx >= 0 && !done; idx--) {
 				boolean patchIt = false;
 				if (backpatches.get(idx).waitingFor == keywordFound) patchIt = done = true;
-				else if (backpatches.get(idx).waitingFor == "break") {
+				else if (backpatches.get(idx).waitingFor.equals("break")) {
 					// Not the expected keyword, but "break"; this is always OK,
 					// but we may or may not patch it depending on the call.
 					patchIt = alsoBreak;
@@ -159,14 +159,14 @@ public class Parser {
 			int idx = backpatches.size() - 1;
 			while (idx >= 0) {
 				BackPatch bp = backpatches.get(idx);
-				if (bp.waitingFor == "if:MARK") {
+				if (bp.waitingFor.equals("if:MARK")) {
 					// There's the special marker that indicates the true start of this if block.
 					backpatches.remove(idx);
 					return;
-				} else if (bp.waitingFor == "end if" || bp.waitingFor == "else") {
+				} else if (bp.waitingFor.equals("end if") || bp.waitingFor.equals("else")) {
 					code.get(bp.lineNum).rhsA = target;
 					backpatches.remove(idx);
-				} else if (backpatches.get(idx).waitingFor == "break") {
+				} else if (backpatches.get(idx).waitingFor.equals("break")) {
 					// Not the expected keyword, but "break"; this is always OK.
 				} else {
 					// Not the expected patch, and not "break"; we have a mismatched block start/end.
@@ -370,7 +370,7 @@ public class Parser {
 			SourceLoc location = new SourceLoc(errorContext, tokens.lineNum);
 
 			// Pop our context if we reach 'end function'.
-			if (tokens.Peek().type == Token.Type.Keyword && tokens.Peek().text == "end function") {
+			if (tokens.Peek().type == Token.Type.Keyword && tokens.Peek().text.equals("end function")) {
 				tokens.Dequeue();
 				if (outputStack.size() > 1) {
 					outputStack.pop();
@@ -403,8 +403,7 @@ public class Parser {
 	}
 
 	void ParseStatement(Lexer tokens, boolean allowExtra) throws LexerException, CompilerException {
-		if (tokens.Peek().type == Token.Type.Keyword && tokens.Peek().text != "not"
-			&& tokens.Peek().text != "true" && tokens.Peek().text != "false") {
+		if (tokens.Peek().type == Token.Type.Keyword && !tokens.Peek().text.equals("not") && !tokens.Peek().text.equals("true") && !tokens.Peek().text.equals("false")) {
 			// Handle statements that begin with a keyword.
 			String keyword = tokens.Dequeue().text;
 			switch (keyword) {
@@ -434,7 +433,7 @@ public class Parser {
 				// else-if blocks, until we get to EOL (and then implicitly do "end if").
 				if (tokens.Peek().type != Token.Type.EOL) {
 					ParseStatement(tokens, true);  // parses a single statement for the "then" body
-					if (tokens.Peek().type == Token.Type.Keyword && tokens.Peek().text == "else") {
+					if (tokens.Peek().type == Token.Type.Keyword && tokens.Peek().text.equals("else")) {
 						tokens.Dequeue();	// skip "else"
 						StartElseClause();
 						ParseStatement(tokens, true);		// parse a single statement for the "else" body
@@ -576,7 +575,7 @@ public class Parser {
 		Value lhs, rhs;
 		Token peek = tokens.Peek();
 		if (peek.type == Token.Type.EOL ||
-				(peek.type == Token.Type.Keyword && peek.text == "else")) {
+				(peek.type == Token.Type.Keyword && peek.text.equals("else"))) {
 			// No explicit assignment; store an implicit result
 			rhs = FullyEvaluate(expr);
 			output.Add(new Line(null, Line.Op.AssignImplicit, rhs));
@@ -596,7 +595,7 @@ public class Parser {
 				output.Add(new Line(null, Line.Op.PushParam, arg));
 				argCount++;
 				if (tokens.Peek().type == Token.Type.EOL) break;
-				if (tokens.Peek().type == Token.Type.Keyword && tokens.Peek().text == "else") break;
+				if (tokens.Peek().type == Token.Type.Keyword && tokens.Peek().text.equals("else")) break;
 				if (tokens.Peek().type == Token.Type.Comma) {
 					tokens.Dequeue();
 					AllowLineBreak(tokens);
@@ -662,7 +661,7 @@ public class Parser {
 	Value ParseFunction(Lexer tokens, boolean asLval, boolean statementStart) throws LexerException, CompilerException {
 		// ExpressionParsingMethod nextLevel = this::ParseOr;
 		Token tok = tokens.Peek();
-		if (tok.type != Token.Type.Keyword || tok.text != "function") return ParseOr(tokens, asLval, statementStart);
+		if (tok.type != Token.Type.Keyword || !tok.text.equals("function")) return ParseOr(tokens, asLval, statementStart);
 		tokens.Dequeue();
 
 		Function func = new Function(null);
@@ -717,7 +716,7 @@ public class Parser {
 		Value val = ParseAnd(tokens, asLval, statementStart);
 		List<Line> jumpLines = null;
 		Token tok = tokens.Peek();
-		while (tok.type == Token.Type.Keyword && tok.text == "or") {
+		while (tok.type == Token.Type.Keyword && tok.text.equals("or")) {
 			tokens.Dequeue();		// discard "or"
 			val = FullyEvaluate(val);
 
@@ -768,7 +767,7 @@ public class Parser {
 		Value val = ParseNot(tokens, asLval, statementStart);
 		List<Line> jumpLines = null;
 		Token tok = tokens.Peek();
-		while (tok.type == Token.Type.Keyword && tok.text == "and") {
+		while (tok.type == Token.Type.Keyword && tok.text.equals("and")) {
 			tokens.Dequeue();		// discard "and"
 			val = FullyEvaluate(val);
 
@@ -815,7 +814,7 @@ public class Parser {
 		//ExpressionParsingMethod nextLevel = this::ParseIsA;
 		Token tok = tokens.Peek();
 		Value val;
-		if (tok.type == Token.Type.Keyword && tok.text == "not") {
+		if (tok.type == Token.Type.Keyword && tok.text.equals("not")) {
 			tokens.Dequeue();		// discard "not"
 
 			AllowLineBreak(tokens); // allow a line break after a unary operator
@@ -841,7 +840,7 @@ public class Parser {
 	Value ParseIsA(Lexer tokens, boolean asLval, boolean statementStart) throws LexerException, CompilerException {
 		// ExpressionParsingMethod nextLevel = this::ParseComparisons;
 		Value val = ParseComparisons(tokens, asLval, statementStart);
-		if (tokens.Peek().type == Token.Type.Keyword && tokens.Peek().text == "isa") {
+		if (tokens.Peek().type == Token.Type.Keyword && tokens.Peek().text.equals("isa")) {
 			tokens.Dequeue();		// discard the isa operator
 			AllowLineBreak(tokens); // allow a line break after a binary operator
 			val = FullyEvaluate(val);
@@ -1016,7 +1015,7 @@ public class Parser {
 
 	Value ParseNew(Lexer tokens, boolean asLval, boolean statementStart) throws LexerException, CompilerException {
 		//ExpressionParsingMethod nextLevel = this::ParseAddressOf;
-		if (tokens.Peek().type != Token.Type.Keyword || tokens.Peek().text != "new") return ParseAddressOf(tokens, asLval, statementStart);
+		if (tokens.Peek().type != Token.Type.Keyword || !tokens.Peek().text.equals("new")) return ParseAddressOf(tokens, asLval, statementStart);
 		tokens.Dequeue();		// skip 'new'
 
 		AllowLineBreak(tokens); // allow a line break after a unary operator
@@ -1092,7 +1091,7 @@ public class Parser {
 			if (var.noInvoke) return val;
 			// Don't invoke super; leave as-is so we can do special handling
 			// of it at runtime.  Also, as an optimization, same for "self".
-			if (var.identifier == "super" || var.identifier == "self") return val;
+			if (var.identifier.equals("super") || var.identifier.equals("self")) return val;
 			// Evaluate a variable (which might be a function we need to call).				
 			ValTemp temp = new ValTemp(output.nextTempNum++);
 			output.Add(new Line(temp, Line.Op.CallFunctionA, val, ValNumber.zero));
@@ -1340,13 +1339,13 @@ public class Parser {
 		} else if (tok.type == Token.Type.String) {
 			return new ValString(tok.text);
 		} else if (tok.type == Token.Type.Identifier) {
-			if (tok.text == "self") return ValVar.self;
+			if (tok.text.equals("self")) return ValVar.self;
 			return new ValVar(tok.text);
 		} else if (tok.type == Token.Type.Keyword) {
 			switch (tok.text) {
-			case "null":	return null;
-			case "true":	return ValNumber.one;
-			case "false":	return ValNumber.zero;
+				case "null":	return null;
+				case "true":	return ValNumber.one;
+				case "false":	return ValNumber.zero;
 			}
 		}
 		throw new CompilerException(String.format("got %s where number, string, or identifier is required", tok));
@@ -1365,7 +1364,7 @@ public class Parser {
 	/// <param name="text">Required token text (if applicable).</param>
 	Token RequireToken(Lexer tokens, Token.Type type, String text) throws LexerException, CompilerException {
 		Token got = (tokens.AtEnd() ? Token.EOL : tokens.Dequeue());
-		if (got.type != type || (text != null && got.text != text)) {
+		if (got.type != type || (text != null && !got.text.equals(text))) {
 			Token expected = new Token(type, text);
 			throw new CompilerException(errorContext, tokens.lineNum,  String.format("got %s where %s is required", got, expected));
 		}
@@ -1379,7 +1378,7 @@ public class Parser {
 	Token RequireEitherToken(Lexer tokens, Token.Type type1, String text1, Token.Type type2, String text2) throws LexerException, CompilerException {
 		Token got = (tokens.AtEnd() ? Token.EOL : tokens.Dequeue());
 		if ((got.type != type1 && got.type != type2)
-			|| ((text1 != null && got.text != text1) && (text2 != null && got.text != text2))) {
+			|| ((text1 != null && !got.text.equals(text1)) && (text2 != null && !got.text.equals(text2)))) {
 			Token expected1 = new Token(type1, text1);
 			Token expected2 = new Token(type2, text2);
 			throw new CompilerException(errorContext, tokens.lineNum, String.format("got %s where %s or %s is required", got, expected1, expected2));
@@ -1396,7 +1395,7 @@ public class Parser {
 	}
 	
 	static void TestValidParse(String src) {
-		TestValidParse(src, false);
+		TestValidParse(src, true);
 	}
 
 	static void TestValidParse(String src, boolean dumpTac) {

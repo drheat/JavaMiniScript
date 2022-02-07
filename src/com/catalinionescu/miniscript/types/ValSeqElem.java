@@ -103,8 +103,8 @@ public class ValSeqElem extends Value {
 	}
 
 	@Override
-	public String ToString(Machine vm) {
-		return String.format("%s%s%s", noInvoke ? "@" : "", sequence.ToString(), index.ToString());
+	public String toString(Machine vm) {
+		return String.format("%s%s%s", noInvoke ? "@" : "", sequence.toString(), index.toString());
 	}
 
 	@Override

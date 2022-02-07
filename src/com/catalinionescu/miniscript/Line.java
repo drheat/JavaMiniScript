@@ -149,7 +149,7 @@ public class Line {
 				text = String.format("%s := %s isa %s", lhs, rhsA, rhsB);
 				break;
 			case BindAssignA:
-				text = String.format("%s := %s; %s.outerVars=", rhsA, rhsB);
+				text = String.format("%s := %s; %s.outerVars=", rhsA, rhsB, rhsA);
 				break;
 			case CopyA:
 				text = String.format("%s := copy of %s", lhs, rhsA);
@@ -261,8 +261,8 @@ public class Line {
 		if ((opA instanceof ValString || opB instanceof ValString) && op == Op.APlusB) {
 			if (opA == null) return opB;
 			if (opB == null) return opA;
-			String sA = opA.ToString(context.vm);
-			String sB = opB.ToString(context.vm);
+			String sA = opA.toString(context.vm);
+			String sB = opB.toString(context.vm);
 			if (sA.length() + sB.length() > ValString.maxSize) throw new LimitExceededException("string too large");
 			return new ValString(sA + sB);
 		}
@@ -381,7 +381,7 @@ public class Line {
 				return new ValString(sA.substring(idx, idx + 1));
 			}
 			if (opB == null || opB instanceof ValString) {
-				String sB = (opB == null ? null : opB.ToString(context.vm));
+				String sB = (opB == null ? null : opB.toString(context.vm));
 				switch (op) {
 					case AMinusB: {
 							if (opB == null) return opA;

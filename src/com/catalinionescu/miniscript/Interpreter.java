@@ -238,7 +238,7 @@ public class Interpreter {
 			vm.GetTopContext().ClearCodeAndTemps();
 			parser.PartialReset();
         }
-		if (sourceLine == "#DUMP") {
+		if (sourceLine.equals("#DUMP")) {
 			vm.DumpTopContext();
 			return;
 		}
@@ -258,7 +258,7 @@ public class Interpreter {
 
 					Value result = vm.globalContext.GetVar(ValVar.implicitResult.identifier);
 					if (result != null) {
-						implicitOutput.print(result.ToString(vm));
+						implicitOutput.print(result.toString(vm));
 					}
 				}
 			}

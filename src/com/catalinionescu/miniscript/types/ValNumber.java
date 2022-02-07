@@ -14,7 +14,7 @@ public class ValNumber extends Value {
 	}
 
 	@Override
-	public String ToString(Machine vm) {
+	public String toString(Machine vm) {
 		// TODO: Review this for compliance with standard C# Miniscript
 		// Convert to a string in the standard MiniScript way.
 		if (value % 1.0 == 0.0) {

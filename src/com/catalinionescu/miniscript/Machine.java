@@ -144,7 +144,7 @@ public class Machine {
 					// bind "self" to the object used to invoke the call, except
 					// when invoking via "super"
 					Value seq = ((ValSeqElem)(line.rhsA)).sequence;
-					if (seq instanceof ValVar && ((ValVar)seq).identifier == "super") self = context.self;
+					if (seq instanceof ValVar && ((ValVar)seq).identifier.equals("super")) self = context.self;
 					else self = context.ValueInContext(seq);
 				}
 				ValFunction func = (ValFunction) result.getFirst();
@@ -199,7 +199,7 @@ public class Machine {
 	public String FindShortName(Value val) {
 		if (globalContext == null || globalContext.variables == null) return null;
 		for (Entry<Value, Value> kv : globalContext.variables.map.entrySet()) {
-			if (kv.getValue() == val && kv.getKey() != val) return kv.getKey().ToString(this);
+			if (kv.getValue() == val && kv.getKey() != val) return kv.getKey().toString(this);
 		}
 
 		return Intrinsic.shortNames.get(val);

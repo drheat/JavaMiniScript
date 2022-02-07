@@ -24,11 +24,12 @@ public abstract class Value {
 		return this;		// most types evaluate to themselves
 	}
 	
-	public String ToString() {
-		return ToString(null);
+	@Override
+	public String toString() {
+		return toString(null);
 	}
 	
-	public abstract String ToString(Machine vm);
+	public abstract String toString(Machine vm);
 	
 	/// <summary>
 	/// This version of Val is like the one above, but also returns
@@ -105,7 +106,7 @@ public abstract class Value {
 	/// <param name="recursionLimit">how deeply we can recurse, or -1 for no limit</param>
 	/// <returns></returns>
 	public String CodeForm(Machine vm, int recursionLimit) {
-		return ToString(vm);
+		return toString(vm);
 	}
 	
 	public int Hash() {

@@ -199,7 +199,7 @@ public class Intrinsics {
 		f.code = (context, partialResult) -> {
 			Value self = context.self;
 			int codepoint = 0;			
-			if (self != null) codepoint = Character.codePointAt(self.ToString(), 0);
+			if (self != null) codepoint = Character.codePointAt(self.toString(), 0);
 			return new Result(codepoint);
 		};
 					
@@ -394,7 +394,7 @@ public class Intrinsics {
 			} else if (self instanceof ValString) {
 				String str = ((ValString)self).value;
 				if (value == null) return Result.Null;
-				String s = value.ToString();
+				String s = value.toString();
 				int idx;
 				if (after == null) idx = str.indexOf(s);
 				else {
@@ -447,10 +447,10 @@ public class Intrinsics {
 				list.set(idx, value);
 				return new Result(self);
 			} else if (self instanceof ValString) {
-				String s = self.ToString();
+				String s = self.toString();
 				if (idx < 0) idx += s.length() + 1;
 				Check.Range(idx, 0, s.length());
-				s = s.substring(0, idx) + value.ToString() + s.substring(idx);
+				s = s.substring(0, idx) + value.toString() + s.substring(idx);
 				return new Result(s);
 			} else {
 				throw new RuntimeException("insert called on invalid type");
@@ -475,7 +475,7 @@ public class Intrinsics {
 			List<String> list = new ArrayList<>(src.values.size());
 			for (int i=0; i<src.values.size(); i++) {
 				if (src.values.get(i) == null) list.add(null);
-				else list.add(src.values.get(i).ToString());
+				else list.add(src.values.get(i).toString());
 			}
 			String result = String.join(delim, list);
 			return new Result(result);
@@ -608,7 +608,7 @@ public class Intrinsics {
 		f.AddParam("s", ValString.empty);
 		f.code = (context, partialResult) -> {
 			Value s = context.GetLocal("s");
-			if (s != null) context.vm.standardOutput.print(s.ToString());
+			if (s != null) context.vm.standardOutput.print(s.toString());
 			else context.vm.standardOutput.print("null");
 			return Result.Null;
 		};
@@ -773,7 +773,7 @@ public class Intrinsics {
 			} else if (self instanceof ValString) {
 				if (k == null) throw new RuntimeException("argument to 'remove' must not be null");
 				ValString selfStr = (ValString)self;
-				String substr = k.ToString();
+				String substr = k.toString();
 				if (selfStr.value.indexOf(substr) < 0) return new Result(self);
 				return new Result(selfStr.value.replace(substr, ""));
 			}
@@ -853,10 +853,10 @@ public class Intrinsics {
 				}
 				return new Result(self);
 			} else if (self instanceof ValString) {
-				String str = self.ToString();
-				String oldstr = oldval == null ? "" : oldval.ToString();
+				String str = self.toString();
+				String oldstr = oldval == null ? "" : oldval.toString();
 				if (oldstr == null || oldstr.isEmpty()) throw new RuntimeException("replace: oldval argument is empty");
-				String newstr = newval == null ? "" : newval.ToString();
+				String newstr = newval == null ? "" : newval.toString();
 				int idx = 0;
 				while (true) {
 					idx = str.indexOf(oldstr, idx);
@@ -1060,7 +1060,7 @@ public class Intrinsics {
 		f.AddParam("delimiter", " ");
 		f.AddParam("maxCount", -1);
 		f.code = (context, partialResult) -> {
-			String self = context.self.ToString();
+			String self = context.self.toString();
 			String delim = context.GetLocalString("delimiter");
 			int maxCount = context.GetLocalInt("maxCount");
 			ValList result = new ValList();
@@ -1100,7 +1100,7 @@ public class Intrinsics {
 		f.code = (context, partialResult) -> {		
 			Value x = context.GetLocal("x");
 			if (x == null) return new Result(ValString.empty);
-			return new Result(x.ToString());
+			return new Result(x.toString());
 		};
 
 		// string type
@@ -1229,7 +1229,7 @@ public class Intrinsics {
 			Value val = context.self;
 			if (val instanceof ValNumber) return new Result(val);
 			if (val instanceof ValString) {
-				double value = Double.parseDouble(val.ToString());
+				double value = Double.parseDouble(val.toString());
 				return new Result(value);
 			}
 			return Result.Null;

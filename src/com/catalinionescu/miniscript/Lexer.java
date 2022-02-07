@@ -127,7 +127,7 @@ public class Lexer {
 			}
 			result.text = input.substring(startPos, position);
 			result.type = (Keywords.isKeyword(result.text) ? Token.Type.Keyword : Token.Type.Identifier);
-			if (result.text == "end") {
+			if (result.text.equals("end")) {
 				// As a special case: when we see "end", grab the next keyword (after whitespace)
 				// too, and conjoin it, so our token is "end if", "end function", etc.
 				Token nextWord = Dequeue();
@@ -137,11 +137,11 @@ public class Lexer {
 					// Oops, didn't find another keyword.  User error.
 					throw new LexerException("'end' without following keyword ('if', 'function', etc.)");
 				}
-			} else if (result.text == "else") {
+			} else if (result.text.equals("else")) {
 				// And similarly, conjoin an "if" after "else" (to make "else if").
 				int p = position;
 				while (p < inputLength && (input.charAt(p)==' ' || input.charAt(p)=='\t')) p++;
-				if (p+1 < inputLength && input.substring(p, p + 2) == "if" &&
+				if (p+1 < inputLength && input.substring(p, p + 2).equals("if") &&
 						(p+2 >= inputLength || IsWhitespace(input.charAt(p+2)))) {
 					result.text = "else if";
 					position = p + 2;
@@ -297,7 +297,7 @@ public class Lexer {
 		if (tok == null) return;
 		UnitTest.ErrorIf(tok.type != type, "Token type: expected " + type + ", but got " + tok.type);
 
-		UnitTest.ErrorIf(text != null && tok.text != text, "Token text: expected " + text + ", but got " + tok.text);
+		UnitTest.ErrorIf(text != null && !tok.text.equals(text), "Token text: expected " + text + ", but got " + tok.text);
 
 	}
 
@@ -311,7 +311,7 @@ public class Lexer {
 		CheckLineNum(lex.lineNum, 1);
 		Check(lex.Dequeue(), Token.Type.OpTimes);
 		Check(lex.Dequeue(), Token.Type.Number, "3.14158");
-		UnitTest.ErrorIf(!lex.AtEnd(), "AtEnd not set when it should be");
+		UnitTest.ErrorIf(!lex.AtEnd(), "AtEnd not set when it should be 1");
 		CheckLineNum(lex.lineNum, 1);
 
 		lex = new Lexer("6*(.1-foo) end if // and a comment!");
@@ -327,14 +327,14 @@ public class Lexer {
 		Check(lex.Dequeue(), Token.Type.RParen);
 		Check(lex.Dequeue(), Token.Type.Keyword, "end if");
 		Check(lex.Dequeue(), Token.Type.EOL);
-		UnitTest.ErrorIf(!lex.AtEnd(), "AtEnd not set when it should be");
+		UnitTest.ErrorIf(!lex.AtEnd(), "AtEnd not set when it should be 2");
 		CheckLineNum(lex.lineNum, 1);
 
 		lex = new Lexer("\"foo\" \"isn't \"\"real\"\"\" \"now \"\"\"\" double!\"");
 		Check(lex.Dequeue(), Token.Type.String, "foo");
 		Check(lex.Dequeue(), Token.Type.String, "isn't \"real\"");
 		Check(lex.Dequeue(), Token.Type.String, "now \"\" double!");
-		UnitTest.ErrorIf(!lex.AtEnd(), "AtEnd not set when it should be");
+		UnitTest.ErrorIf(!lex.AtEnd(), "AtEnd not set when it should be 3");
 
 		lex = new Lexer("foo\nbar\rbaz\r\nbamf");
 		Check(lex.Dequeue(), Token.Type.Identifier, "foo");
@@ -349,7 +349,7 @@ public class Lexer {
 		Check(lex.Dequeue(), Token.Type.Identifier, "bamf");
 		CheckLineNum(lex.lineNum, 4);
 		Check(lex.Dequeue(), Token.Type.EOL);
-		UnitTest.ErrorIf(!lex.AtEnd(), "AtEnd not set when it should be");
+		UnitTest.ErrorIf(!lex.AtEnd(), "AtEnd not set when it should be 4");
 		
 		Check(LastToken("x=42 // foo"), Token.Type.Number, "42");
 		Check(LastToken("x = [1, 2, // foo"), Token.Type.Comma);

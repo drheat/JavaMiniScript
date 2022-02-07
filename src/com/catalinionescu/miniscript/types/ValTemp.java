@@ -21,7 +21,7 @@ public class ValTemp extends Value {
 	}
 
 	@Override
-	public String ToString(Machine vm) {
+	public String toString(Machine vm) {
 		return String.format("_%d", tempNum);
 	}
 

@@ -106,10 +106,10 @@ public class Context {
 	}
 
 	public void SetVar(String identifier, Value value) {
-		if (identifier == "globals" || identifier == "locals") {
+		if (identifier.equals("globals") || identifier.equals("locals")) {
 			throw new RuntimeException("can't assign to " + identifier);
 		}
-		if (identifier == "self") self = value;
+		if (identifier.equals("self")) self = value;
 		if (variables == null) variables = new ValMap();
 		if (variables.assignOverride == null || !variables.assignOverride.run(new ValString(identifier), value)) {
 			variables.set(identifier, value);
@@ -215,7 +215,7 @@ public class Context {
 		
 		if (result.getFirst()) {
 			if (result.getSecond() == null) return null;	// variable found, but its value was null!
-			return result.getSecond().ToString();
+			return result.getSecond().toString();
 		}
 		return defaultValue;
 	}
@@ -241,16 +241,16 @@ public class Context {
 //		}
 		
 		// check for special built-in identifiers 'locals', 'globals', etc.
-		if (identifier == "self") return self;
-		if (identifier == "locals") {
+		if (identifier.equals("self")) return self;
+		if (identifier.equals("locals")) {
 			if (variables == null) variables = new ValMap();
 			return variables;
 		}
-		if (identifier == "globals") {
+		if (identifier.equals("globals")) {
 			if (root().variables == null) root().variables = new ValMap();
 			return root().variables;
 		}
-		if (identifier == "outer") {
+		if (identifier.equals("outer")) {
 			// return module variables, if we have them; else globals
 			if (outerVars != null) return outerVars;
 			if (root().variables == null) root().variables = new ValMap();
@@ -351,7 +351,7 @@ public class Context {
 		// into local variables corrersponding to parameter names.
 		// As a special case, skip over the first parameter if it is named 'self'
 		// and we were invoked with dot syntax.
-		int selfParam = (gotSelf && func.parameters.size() > 0 && func.parameters.get(0).name == "self" ? 1 : 0);
+		int selfParam = (gotSelf && func.parameters.size() > 0 && func.parameters.get(0).name.equals("self") ? 1 : 0);
 		for (int i = 0; i < argCount; i++) {
 			// Careful -- when we pop them off, they're in reverse order.
 			Value argument = args.pop();
@@ -360,7 +360,7 @@ public class Context {
 				throw new TooManyArgumentsException();
 			}
 			String param = func.parameters.get(paramNum).name;
-			if (param == "self") result.self = argument;
+			if (param.equals("self")) result.self = argument;
 			else result.SetVar(param, argument);
 		}
 		// And fill in the rest with default values
@@ -383,8 +383,8 @@ public class Context {
 			System.out.println(" NONE");
 		} else {
 			for (Value v : variables.Keys()) {
-				String id = v.ToString(vm);
-				System.out.println(String.format("%s: %s", id, variables.get(id).ToString(vm)));
+				String id = v.toString(vm);
+				System.out.println(String.format("%s: %s", id, variables.get(id).toString(vm)));
 			}
 		}
 
