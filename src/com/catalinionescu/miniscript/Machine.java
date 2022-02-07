@@ -135,6 +135,7 @@ public class Machine {
 			// Resolve rhsA.  If it's a function, invoke it; otherwise,
 			// just store it directly (but pop the call context).
 			Pair<Value, ValMap> result = line.rhsA.ValPair(context);	// resolves the whole dot chain, if any
+			// TODO: make sure infinite recursive calls are properly handled, see TestSuite @ line 819
 			if (result != null && result.getFirst() instanceof ValFunction) {
 				Value self = null;
 				// bind "super" to the parent of the map the function was found in
