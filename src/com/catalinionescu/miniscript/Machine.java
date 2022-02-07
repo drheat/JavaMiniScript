@@ -135,7 +135,7 @@ public class Machine {
 			// Resolve rhsA.  If it's a function, invoke it; otherwise,
 			// just store it directly (but pop the call context).
 			Pair<Value, ValMap> result = line.rhsA.ValPair(context);	// resolves the whole dot chain, if any
-			if (result.getFirst() instanceof ValFunction) {
+			if (result != null && result.getFirst() instanceof ValFunction) {
 				Value self = null;
 				// bind "super" to the parent of the map the function was found in
 				// TODO: check out that super here works as superV
@@ -154,7 +154,7 @@ public class Machine {
 				if (result.getSecond() != null) nextContext.SetVar("super", superV);
 				if (self != null) nextContext.self = self;	// (set only if bound above)
 				stack.push(nextContext);
-			} else {
+			} else if (result != null) {
 				// The user is attempting to call something that's not a function.
 				// We'll allow that, but any number of parameters is too many.  [#35]
 				// (No need to pop them, as the exception will pop the whole call stack anyway.)
