@@ -29,14 +29,7 @@ import com.catalinionescu.miniscript.utils.fastmath.Precision;
 /// to browse them for lots of examples of how to write your own intrinics.
 /// </summary>
 public class Intrinsics {
-	static boolean initialized;
-	
-	private class KeyedValue {
-		public Value sortKey;
-		public Value value;
-		//public long valueIndex;
-	}
-	
+	static boolean initialized;	
 
 	/// <summary>
 	/// InitIfNeeded: called automatically during script setup to make sure
@@ -444,7 +437,7 @@ public class Intrinsics {
 				List<Value> list = ((ValList)self).values;
 				if (idx < 0) idx += list.size() + 1;	// +1 because we are inserting AND counting from the end.
 				Check.Range(idx, 0, list.size());	// and allowing all the way up to .Count here, because insert.
-				list.set(idx, value);
+				list.add(idx, value);
 				return new Result(self);
 			} else if (self instanceof ValString) {
 				String s = self.toString();
@@ -1016,7 +1009,8 @@ public class Intrinsics {
 				// Harder case: sort by a key.
 				int count = list.values.size();
 				KeyedValue[] arr = new KeyedValue[count];
-				for (int i=0; i < count; i++) {
+				for (int i = 0; i < count; i++) {
+					arr[i] = new KeyedValue();
 					arr[i].value = list.values.get(i);
 					//arr[i].valueIndex = i;
 				}
@@ -1024,7 +1018,7 @@ public class Intrinsics {
 				// case it's the item indexed by the given key.  (Works too for lists if our
 				// index is an integer.)
 				int byKeyInt = byKey.IntValue();
-				for (int i=0; i < count; i++) {
+				for (int i = 0; i < count; i++) {
 					Value item = list.values.get(i);
 					if (item instanceof ValMap) arr[i].sortKey = ((ValMap)item).Lookup(byKey);
 					else if (item instanceof ValList) {
