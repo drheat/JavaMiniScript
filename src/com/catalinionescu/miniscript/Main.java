@@ -97,7 +97,14 @@ public class Main {
 			int lineNum = 1;
 		    while ((line = br.readLine()) != null) {
 				if (line.startsWith("====")) {
-					if (sourceLines != null) runTest(sourceLines, testLineNum, expectedOutput, outputLineNum);
+					if (sourceLines != null) {
+						try {
+							runTest(sourceLines, testLineNum, expectedOutput, outputLineNum);
+						} catch (NullPointerException e) {
+							System.out.println(lineNum);
+							e.printStackTrace();
+						}
+					}
 					sourceLines = null;
 					expectedOutput = null;
 				} else if (line.startsWith("----")) {
