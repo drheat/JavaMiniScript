@@ -77,7 +77,7 @@ public class Parser {
 
 		public JumpPoint CloseJumpPoint(String keyword) throws CompilerException {
 			int idx = jumpPoints.size() - 1;
-			if (idx < 0 || jumpPoints.get(idx).keyword != keyword) {
+			if (idx < 0 || !jumpPoints.get(idx).keyword.equals(keyword)) {
 				throw new CompilerException(String.format("'end %s' without matching '%s'", keyword, keyword));
 			}
 			JumpPoint result = jumpPoints.get(idx);
@@ -131,7 +131,7 @@ public class Parser {
 			boolean done = false;
 			for (int idx = backpatches.size() - 1; idx >= 0 && !done; idx--) {
 				boolean patchIt = false;
-				if (backpatches.get(idx).waitingFor == keywordFound) patchIt = done = true;
+				if (backpatches.get(idx).waitingFor.equals(keywordFound)) patchIt = done = true;
 				else if (backpatches.get(idx).waitingFor.equals("break")) {
 					// Not the expected keyword, but "break"; this is always OK,
 					// but we may or may not patch it depending on the call.
