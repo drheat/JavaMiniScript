@@ -68,7 +68,7 @@ public class Intrinsics {
 		f = Intrinsic.Create("acos");
 		f.AddParam("x", 0);
 		f.code = (context, partialResult) -> {
-			return new Result(Math.abs(context.GetLocalDouble("x")));
+			return new Result(Math.acos(context.GetLocalDouble("x")));
 		};
 
 		// asin
