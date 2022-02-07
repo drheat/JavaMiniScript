@@ -20,6 +20,7 @@ import com.catalinionescu.miniscript.types.ValString;
 import com.catalinionescu.miniscript.types.Value;
 import com.catalinionescu.miniscript.types.ValueReverseSorter;
 import com.catalinionescu.miniscript.types.ValueSorter;
+import com.catalinionescu.miniscript.utils.StringUtil;
 import com.catalinionescu.miniscript.utils.Unicode;
 import com.catalinionescu.miniscript.utils.fastmath.Precision;
 
@@ -765,10 +766,10 @@ public class Intrinsics {
 				return Result.Null;
 			} else if (self instanceof ValString) {
 				if (k == null) throw new RuntimeException("argument to 'remove' must not be null");
-				ValString selfStr = (ValString)self;
+				ValString selfStr = (ValString) self;
 				String substr = k.toString();
 				if (selfStr.value.indexOf(substr) < 0) return new Result(self);
-				return new Result(selfStr.value.replace(substr, ""));
+				return new Result(StringUtil.removeFirst(selfStr.value, substr));
 			}
 			throw new TypeException("Type Error: 'remove' requires map, list, or string");
 		};
