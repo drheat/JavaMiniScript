@@ -180,7 +180,7 @@ public class Parser {
 	}
 	
 	// Partial input, in the case where line continuation has been used.
-	String partialInput;
+	String partialInput = "";
 
 	// List of open code blocks we're working on (while compiling a function,
 	// we push a new one onto this stack, compile to that, and then pop it
@@ -221,7 +221,7 @@ public class Parser {
 		output.backpatches.clear();
 		output.jumpPoints.clear();
 		output.nextTempNum = 0;
-		partialInput = null;
+		partialInput = "";
 		pendingState = null;
 	}
 
@@ -276,7 +276,7 @@ public class Parser {
 			}
 		}
 		Lexer tokens = new Lexer(partialInput + sourceCode);
-		partialInput = null;
+		partialInput = "";
 		ParseMultipleLines(tokens);
 
 		if (!replMode && NeedMoreInput()) {
@@ -1395,7 +1395,7 @@ public class Parser {
 	}
 	
 	static void TestValidParse(String src) {
-		TestValidParse(src, true);
+		TestValidParse(src, false);
 	}
 
 	static void TestValidParse(String src, boolean dumpTac) {

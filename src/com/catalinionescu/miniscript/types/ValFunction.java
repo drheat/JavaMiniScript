@@ -32,6 +32,11 @@ public class ValFunction extends Value {
 	public boolean IsA(Value type, Machine vm) {
 		return type == vm.functionType;
 	}
+	
+	@Override
+	public int hashCode() {
+		return function.hashCode();
+	}
 
 	@Override
 	public int Hash(int recursionDepth) {

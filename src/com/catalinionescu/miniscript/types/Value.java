@@ -109,6 +109,11 @@ public abstract class Value {
 		return toString(vm);
 	}
 	
+	@Override
+	public int hashCode() {
+		return Hash();
+	}
+	
 	public int Hash() {
 		return Hash(16);
 	}
@@ -119,6 +124,15 @@ public abstract class Value {
 	/// </summary>
 	/// <returns>hash value</returns>
 	public abstract int Hash(int recursionDepth);
+	
+	@Override
+	public boolean equals(Object o) {
+		if (o == null || !(o instanceof Value)) {
+			return false;
+		}
+		
+		return Equality((Value) o) == 1;
+	}
 	
 	public double Equality(Value rhs) {
 		return Equality(rhs, 16);
