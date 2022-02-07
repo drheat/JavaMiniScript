@@ -83,7 +83,7 @@ public class Lexer {
 		else if (c == '@') result.type = Token.Type.AddressOf;
 		else if (c == ';' || c == '\n') {
 			result.type = Token.Type.EOL;
-			result.text = c == ';' ? ";" : "\n";
+			result.text = (c == ';' ? ";" : "\n");
 			if (c != ';') lineNum++;
 		}
 		if (c == '\r') {
@@ -140,9 +140,10 @@ public class Lexer {
 			} else if (result.text.equals("else")) {
 				// And similarly, conjoin an "if" after "else" (to make "else if").
 				int p = position;
-				while (p < inputLength && (input.charAt(p)==' ' || input.charAt(p)=='\t')) p++;
-				if (p+1 < inputLength && input.substring(p, p + 2).equals("if") &&
-						(p+2 >= inputLength || IsWhitespace(input.charAt(p+2)))) {
+				while (p < inputLength && (input.charAt(p) == ' ' || input.charAt(p) == '\t')) {
+					p++;
+				}
+				if (p + 1 < inputLength && input.substring(p, p + 2).equals("if") && (p + 2 >= inputLength || IsWhitespace(input.charAt(p + 2)))) {
 					result.text = "else if";
 					position = p + 2;
 				}

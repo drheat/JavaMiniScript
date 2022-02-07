@@ -1,5 +1,7 @@
 package com.catalinionescu.miniscript.types;
 
+import java.text.DecimalFormat;
+
 import com.catalinionescu.miniscript.Machine;
 
 /// <summary>
@@ -7,6 +9,8 @@ import com.catalinionescu.miniscript.Machine;
 /// Since we also use numbers to represent boolean values, ValNumber does that job too.
 /// </summary>
 public class ValNumber extends Value {
+	private static final DecimalFormat decimalForm = new DecimalFormat("#.######");
+	
 	public double value;
 
 	public ValNumber(double value) {
@@ -15,19 +19,19 @@ public class ValNumber extends Value {
 
 	@Override
 	public String toString(Machine vm) {
-		// TODO: Review this for compliance with standard C# Miniscript
 		// Convert to a string in the standard MiniScript way.
 		if (value % 1.0 == 0.0) {
 			// integer values as integers
 			return String.format("%d", (int) value);	// value.ToString("0");
 		} else if (value > 1E10 || value < -1E10 || (value < 1E-6 && value > -1E-6)) {
+			// TODO: Review this for compliance with standard C# Miniscript
 			// very large/small numbers in exponential form
 			String s = String.format("%E", value); // value.ToString("E6");
 			s = s.replace("E-00", "E-0");
 			return s;
 		} else {
 			// all others in decimal form, with 1-6 digits past the decimal point
-			return String.format("%f", value); //value.ToString("0.0#####");
+			return decimalForm.format(value);	//value.ToString("0.0#####");
 		}
 	}
 

@@ -26,17 +26,23 @@ public class ValVar extends Value {
 
 	@Override
 	public String toString(Machine vm) {
-		return noInvoke ? "@" : "" + identifier;
+		return (noInvoke ? "@" : "") + identifier;
 	}
 
 	@Override
 	public int Hash(int recursionDepth) {
 		return identifier.hashCode();
 	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (o == null || !(o instanceof ValVar)) return false;
+		return ((ValVar) o).identifier.equals(identifier);
+	}
 
 	@Override
 	public double Equality(Value rhs, int recursionDepth) {
-		return rhs instanceof ValVar && ((ValVar)rhs).identifier == identifier ? 1 : 0;
+		return rhs instanceof ValVar && ((ValVar)rhs).identifier.equals(identifier) ? 1 : 0;
 	}
 
 	// Special name for the implicit result variable we assign to on expression statements:

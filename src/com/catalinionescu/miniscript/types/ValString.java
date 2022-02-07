@@ -44,11 +44,18 @@ public class ValString extends Value {
 	public int Hash(int recursionDepth) {
 		return value.hashCode();
 	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (o == null || !(o instanceof ValString)) return false;
+		ValString other = (ValString) o;
+		return (other.value == null && value == null) || other.value.equals(value);
+	}
 
 	@Override
 	public double Equality(Value rhs, int recursionDepth) {
 		// String equality is treated the same as in C#.
-		return rhs instanceof ValString && ((ValString)rhs).value == value ? 1 : 0;
+		return rhs instanceof ValString && ((ValString)rhs).value.equals(value) ? 1 : 0;
 	}
 
 	public Value GetElem(Value index) throws IndexException {
