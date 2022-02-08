@@ -1038,7 +1038,7 @@ public class Intrinsics {
 				// And finally, convert that back into our list
 				int idx = 0;
 				for (KeyedValue kv : sortedArr) {
-					System.out.println("*** " + kv.value + " " + kv.value.getClass().getCanonicalName());
+					// System.out.println("*** " + kv.value + " " + kv.value.getClass().getCanonicalName());
 					list.values.set(idx++, kv.value);
 				}
 			}
