@@ -120,6 +120,7 @@ public class ValMap extends Value {
 	public Value Lookup(Value key) {
 		if (key == null) key = ValNull.instance;
 		ValMap obj = this;
+		int recursion = 16;
 		while (obj != null) {
 			if (obj.map.containsKey(key)) {
 				return obj.map.get(key);
@@ -127,6 +128,8 @@ public class ValMap extends Value {
 
 			if (obj.map.containsKey(ValString.magicIsA)) {
 				obj = (ValMap) obj.map.get(ValString.magicIsA);
+				recursion--;
+				if (recursion <= 0) break;
 			} else {
 				break;
 			}
