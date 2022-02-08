@@ -1,6 +1,7 @@
 package com.catalinionescu.miniscript.intrinsics;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,8 @@ import com.catalinionescu.miniscript.TAC;
 import com.catalinionescu.miniscript.exceptions.Check;
 import com.catalinionescu.miniscript.exceptions.LimitExceededException;
 import com.catalinionescu.miniscript.exceptions.TypeException;
+import com.catalinionescu.miniscript.types.KeyedReverseSorter;
+import com.catalinionescu.miniscript.types.KeyedSorter;
 import com.catalinionescu.miniscript.types.ValFunction;
 import com.catalinionescu.miniscript.types.ValList;
 import com.catalinionescu.miniscript.types.ValMap;
@@ -997,45 +1000,47 @@ public class Intrinsics {
 			Value self = context.self;
 			ValList list = (ValList) self;
 			if (list == null || list.values.size() < 2) return new Result(self);
-
-			Comparator<Value> sorter;
-			if (context.GetVar("ascending").BoolValue()) sorter = ValueSorter.instance;
-			else sorter = ValueReverseSorter.instance;
-
 			Value byKey = context.GetLocal("byKey");
 			if (byKey == null) {
 				// Simple case: sort the values as themselves
-				list.values.sort(sorter);
-			} else {
+				list.values.sort(context.GetVar("ascending").BoolValue() ? ValueSorter.instance : ValueReverseSorter.instance);
+			} else {				
 				// Harder case: sort by a key.
 				int count = list.values.size();
 				KeyedValue[] arr = new KeyedValue[count];
 				for (int i = 0; i < count; i++) {
 					arr[i] = new KeyedValue();
 					arr[i].value = list.values.get(i);
-					//arr[i].valueIndex = i;
 				}
+				
 				// The key for each item will be the item itself, unless it is a map, in which
 				// case it's the item indexed by the given key.  (Works too for lists if our
 				// index is an integer.)
 				int byKeyInt = byKey.IntValue();
 				for (int i = 0; i < count; i++) {
 					Value item = list.values.get(i);
-					if (item instanceof ValMap) arr[i].sortKey = ((ValMap)item).Lookup(byKey);
-					else if (item instanceof ValList) {
-						ValList itemList = (ValList)item;
-						if (byKeyInt > -itemList.values.size() && byKeyInt < itemList.values.size()) arr[i].sortKey = itemList.values.get(byKeyInt);
-						else arr[i].sortKey = null;
+					if (item instanceof ValMap) {
+						arr[i].sortKey = ((ValMap) item).Lookup(byKey);
+					} else if (item instanceof ValList) {
+						ValList itemList = (ValList) item;
+						if (byKeyInt > -itemList.values.size() && byKeyInt < itemList.values.size()) {
+							arr[i].sortKey = itemList.values.get(byKeyInt);
+						} else {
+							arr[i].sortKey = null;
+						}
 					}
 				}
+				
 				// Now sort our list of keyed values, by key
-				// TODO: implement sorting a map by key instead of value
-//				KeyedValue[] sortedArr = arr.OrderBy((arg) -> arg.sortKey, sorter);
-//				// And finally, convert that back into our list
-//				int idx = 0;
-//				for (KeyedValue kv : sortedArr) {
-//					list.values.add(idx++, kv.value);
-//				}
+				List<KeyedValue> sortedArr = Arrays.asList(arr);
+				sortedArr.sort(context.GetVar("ascending").BoolValue() ? KeyedSorter.instance : KeyedReverseSorter.instance);
+				
+				// And finally, convert that back into our list
+				int idx = 0;
+				for (KeyedValue kv : sortedArr) {
+					System.out.println("*** " + kv.value + " " + kv.value.getClass().getCanonicalName());
+					list.values.set(idx++, kv.value);
+				}
 			}
 			return new Result(list);
 		};
