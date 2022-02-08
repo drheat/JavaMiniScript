@@ -148,6 +148,7 @@ public class ValMap extends Value {
 		// , out ValMap valueFoundIn
 		if (key == null) key = ValNull.instance;
 		ValMap obj = this;
+		int recursion = 16;
 		while (obj != null) {
 			if (obj.map.containsKey(key)) {
 				return new Pair<Value, ValMap>(obj.map.get(key), obj);
@@ -155,6 +156,8 @@ public class ValMap extends Value {
 			
 			if (obj.map.containsKey(ValString.magicIsA)) {
 				obj = (ValMap) obj.map.get(ValString.magicIsA);
+				recursion--;
+				if (recursion <= 0) break;
 			} else {
 				break;
 			}
@@ -226,10 +229,13 @@ public class ValMap extends Value {
 		// one of those.  Otherwise, we have to walk the __isa chain.
 		if (type == vm.mapType) return true;
 		Value p = map.get(ValString.magicIsA);
+		int recursion = 16;
 		while (p != null) {
 			if (p == type) return true;
 			if (!(p instanceof ValMap)) return false;
 			p = ((ValMap) p).map.get(ValString.magicIsA);
+			recursion--;
+			if (recursion <= 0) break;
 		}
 		return false;
 	}
