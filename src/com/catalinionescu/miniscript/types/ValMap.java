@@ -209,11 +209,11 @@ public class ValMap extends Value {
 			if (shortName != null) return shortName;
 		}
 		String[] strs = new String[map.size()];
-		int i = 0;
+		int i = map.size() - 1;
 		for (Entry<Value, Value> kv : map.entrySet()) {
 			int nextRecurLimit = recursionLimit - 1;
 			if (kv.getKey() == ValString.magicIsA) nextRecurLimit = 1;
-			strs[i++] = String.format("%s: %s", kv.getKey().CodeForm(vm, nextRecurLimit), kv.getValue() == null ? "null" : kv.getValue().CodeForm(vm, nextRecurLimit));
+			strs[i--] = String.format("%s: %s", kv.getKey().CodeForm(vm, nextRecurLimit), kv.getValue() == null ? "null" : kv.getValue().CodeForm(vm, nextRecurLimit));
 		}
 		return "{" + String.join(", ", strs) + "}";
 	}
